@@ -6,7 +6,6 @@
     <h2>{{ $blog->title }}</h2>
     <span>作成日：{{ $blog->created_at }}</span>
     <span>更新日：{{ $blog->updated_at }}</span>
-    <p>{{ $blog->content }}</p>
   </div>
 </div>
 @endsection
