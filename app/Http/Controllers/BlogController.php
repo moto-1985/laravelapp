@@ -63,4 +63,64 @@ class BlogController extends Controller
         \Session::flash('err_msg', 'ブログを登録しました');
         return redirect(route('blogs'));
     }
+    /**
+     * ブログ編集フォームを表示する
+     * @param int $id
+     * @return view
+     */
+    public function showEdit($id)
+    {
+        $blog = Blog::find($id);
+        if (is_null($blog)) {
+            \Session::flash('err_msg', '該当のデータがありません');
+            return redirect(route('blogs'));
+        }
+
+        return view('blog.edit', ['blog' => $blog]);
+    }
+    /**
+     * ブログを登録する
+     *
+     * @return view
+     */
+    public function exeUpdate(BlogRequest $request)
+    {
+        $inputs = $request->all();
+
+        \DB::beginTransaction();
+        try {
+            $blog = Blog::find($inputs['id']);
+            $blog->fill([
+                'title' => $inputs['title'],
+                'content' => $inputs['content'],
+            ]);
+            $blog->save();
+            \DB::commit();
+        } catch (\Throwable $e) {
+            \DB::rollback();
+            abort(500);
+        }
+        \Session::flash('err_msg', 'ブログを更新しました');
+
+        return redirect(route('blogs'));
+    }
+    /**
+     * ブログ削除
+     * @param int $id
+     * @return view
+     */
+    public function exeDelete($id)
+    {
+        if (empty($id)) {
+            \Session::flash('err_msg', '該当のデータがありません');
+            return redirect(route('blogs'));
+        }
+        try {
+            Blog::destroy($id);
+        } catch (\Throwable $e) {
+            abort(500);
+        }
+        \Session::flash('err_msg', '削除しました');
+        return redirect(route('blogs'));
+    }
 }
